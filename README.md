@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# japanologie.wien
 
-## Getting Started
+Webseite für die Japanologie in Wien. Die es Studis erleichtern soll sich
+selbst den Stoff beizubringen.
 
-First, run the development server:
+## Zweck
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Zweck ist es in erster Linie mir mein eigenes Studium zu erleichtern.
+Und das schaff ich (hoffentlich) mit Tools die mir das lernen von Kanji
+und Vokabeln erleichtern. Jedoch finde ich wäre es Schade wenn ich diese
+Tools nur für mich behalte, und daher ist diese Webseite entstanden.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* KanjiListe = Eine etwas übersichtlichere Kanji-Liste wie das Excel, dass wir
+von der Universität erhalten haben
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ToDo
 
-## Learn More
+- [x] KanjiListe
+- [ ] Bessere README
+- [ ] Vokabel-Liste
+- ...
 
-To learn more about Next.js, take a look at the following resources:
+## Contribution
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Sollte etwas fehlen, am besten einen Issue aufmachen. Falls du direkt etwas
+ausbessern willst kannst du auch einen Pull-Request erstellen, es wäre aber
+trotzdem toll wenn du vorher ein Issue aufmachen könntest.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Das Projekt ist momentan noch sehr in den Kinderschuhen, daher steht einiges
+noch nicht ganz fest. (Style, wo X hinkommt, wie X gelöst werden soll, ...)
+Diese Dinge benötigen momentan sichernoch einiges an Überlegung und Diskussion.
+Das bendeutet das sich die oben genannten Dinge noch ändern können.

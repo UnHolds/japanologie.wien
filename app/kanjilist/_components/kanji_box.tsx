@@ -1,26 +1,26 @@
 
 
 export interface Reading {
-    romaji: String,
-    katakana: String,
-    hiragana: String,
-    meaning: String
+    romaji: string,
+    katakana: string,
+    hiragana: string,
+    meaning: string
 }
 
 export interface Radical {
-    short: String
-    long: String|null,
+    short: string
+    long: string|null,
 }
 
 export interface Kanji {
-    kanji: String,
-    main_meaning: String
+    kanji: string,
+    main_meaning: string
     radical: Radical,
     number: number
     strokes: number,
     frequency: number,
-    book: String,
-    section: String,
+    book: string,
+    section: string,
     on_yomi: Reading[]
     kun_yomi: Reading[]
 }

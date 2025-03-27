@@ -39,7 +39,7 @@ export default function KanjiBox({ kanji }: Props) {
         <div className="flex flex-col gap-5 ml-5 pt-4">
             <div className="flex">
                 <div className="w-25 flex-none"><b>On-yomi:</b></div>
-                <div className="flex flex-warp">
+                <div className="flex flex-warp flex-col sm:flex-row gap-2">
                     {kanji.on_yomi.map((reading, i) =>
                         <div key={i}>{ reading.romaji } ({ reading.katakana}) - { reading.meaning }</div>
                     )}
@@ -47,7 +47,7 @@ export default function KanjiBox({ kanji }: Props) {
             </div>
             <div className="flex">
                 <div className="w-25 flex-none"><b>Kun-yomi:</b></div>
-                <div className="flex flex-wrap">
+                <div className="flex flex-wrap flex-col sm:flex-row gap-2">
                     {kanji.kun_yomi.map((reading, i) =>
                         <div key={i}>{ reading.romaji } ({ reading.hiragana}) - {reading.meaning}</div>
                     )}

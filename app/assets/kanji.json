@@ -5448,7 +5448,7 @@
                 "romaji": "a.geru / .garu",
                 "hiragana": "あ.げる / .がる",
                 "katakana": "ア.ゲル / .ガル",
-                "meaning": "erhöhen, heben / hinaufgehen,ansteigen"
+                "meaning": "erhöhen, heben / hinaufgehen, ansteigen"
             },
             {
                 "romaji": "nobo.ru / kami",
@@ -17228,13 +17228,13 @@
         "frequency": 1337.0,
         "book": "I",
         "section": 17,
-        "main_meaning": "(ein Musikinstrument)spielen",
+        "main_meaning": "(ein Musikinstrument) spielen",
         "on_yomi": [
             {
                 "romaji": "SOU",
                 "hiragana": "そう",
                 "katakana": "ソウ",
-                "meaning": "(ein Musikinstrument)spielen"
+                "meaning": "(ein Musikinstrument) spielen"
             }
         ],
         "kun_yomi": [
@@ -17242,7 +17242,7 @@
                 "romaji": "kana.deru",
                 "hiragana": "かな.でる",
                 "katakana": "カナ.デル",
-                "meaning": "(ein Musikinstrument)spielen"
+                "meaning": "(ein Musikinstrument) spielen"
             }
         ]
     },
@@ -50412,13 +50412,13 @@
         "frequency": 884.0,
         "book": "Z",
         "section": null,
-        "main_meaning": "Daimyat(Lehensgebiet)",
+        "main_meaning": "Daimyat (Lehensgebiet)",
         "on_yomi": [
             {
                 "romaji": "HAN",
                 "hiragana": "はん",
                 "katakana": "ハン",
-                "meaning": "Daimyat(Lehensgebiet)"
+                "meaning": "Daimyat (Lehensgebiet)"
             }
         ],
         "kun_yomi": []
@@ -51889,7 +51889,7 @@
                 "romaji": "saegi.ru",
                 "hiragana": "さえぎ.る",
                 "katakana": "サエギ.ル",
-                "meaning": "behindern,unterbrechen"
+                "meaning": "behindern, unterbrechen"
             }
         ]
     },

@@ -10,7 +10,7 @@ export default function VocList() {
                 <div className="h-full flex flex-col gap-2 xl:w-1/3 lg:w-2/3">
                     {
                     vocs.map((v, i) => {
-                        let elems: React.JSX.Element[] = [];
+                        const elems: React.JSX.Element[] = [];
                         if(curr_lesson != v.lesson) {
                             curr_lesson = v.lesson;
                             elems.push(<div key={`${i}-l`} className="text-center font-bold text-4xl">{curr_lesson} 課</div>);

@@ -27,21 +27,22 @@ export interface Kanji {
 
 interface Props {
     kanji: Kanji
+    hideInfo: boolean
 }
 
-export default function KanjiBox({ kanji }: Props) {
+export default function KanjiBox({ kanji, hideInfo }: Props) {
     return (
-    <div className="flex border-solid border-2 p-2 relative">
+    <div className="flex border-solid border-2 p-2 relative group">
         <div className="w-30">
             <div className="flex text-center h-30 text-8xl justify-center items-center">{kanji.kanji }</div>
-            <div className="text-center">{kanji.main_meaning }</div>
+            <div className={`text-center ${hideInfo ? "bg-gray-100 blur-lg group-hover:bg-inherit group-hover:blur-none" : ""}`}>{kanji.main_meaning }</div>
         </div>
         <div className="flex flex-col gap-5 ml-5 pt-4">
             <div className="flex">
                 <div className="w-25 flex-none"><b>On-yomi:</b></div>
                 <div className="flex flex-warp flex-col sm:flex-row gap-2">
                     {kanji.on_yomi.map((reading, i) =>
-                        <div key={i}>{ reading.romaji } ({ reading.katakana}) - { reading.meaning }</div>
+                        <div key={i} className={`${hideInfo ? "bg-gray-100 blur-lg group-hover:bg-inherit group-hover:blur-none" : ""}`}>{ reading.romaji } ({ reading.katakana}) - { reading.meaning }</div>
                     )}
                 </div>
             </div>
@@ -49,7 +50,7 @@ export default function KanjiBox({ kanji }: Props) {
                 <div className="w-25 flex-none"><b>Kun-yomi:</b></div>
                 <div className="flex flex-wrap flex-col sm:flex-row gap-2">
                     {kanji.kun_yomi.map((reading, i) =>
-                        <div key={i}>{ reading.romaji } ({ reading.hiragana}) - {reading.meaning}</div>
+                        <div key={i} className={`${hideInfo ? "bg-gray-100 blur-lg group-hover:bg-inherit group-hover:blur-none" : ""}`}>{ reading.romaji } ({ reading.hiragana}) - {reading.meaning}</div>
                     )}
                 </div>
             </div>

@@ -18,7 +18,7 @@ export default function VocList() {
                 </div>
                 <div className="flex items-center gap-2">
                     <input type="checkbox" name="hide_kanji" className="w-5 h-5" checked={hideMeaning} onChange={() => {setHideMeaning(!hideMeaning)}}/>
-                    <label htmlFor="hide_kana" className="text-xl">Hide Meaning</label>
+                    <label htmlFor="hide_kanji" className="text-xl">Hide Meaning</label>
                 </div>
             </div>
             <div className="w-full flex justify-center">

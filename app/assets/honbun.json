@@ -3,25 +3,31 @@
         "lesson": 1,
         "honbun": 1,
         "title": "{私|わたし}はワン・シューミンです",
+        "title_translation": "Ich bin ワン・シューミン",
         "story": [
             {
-                "location": "{教|きょう}{室|しつ}で"
+                "location": "{教|きょう}{室|しつ}で",
+                "translation": "Im Klassenzimmer"
             },
             {
                 "name": "ワン",
-                "text": "はじめまして。{私|わたし}はワン・シューミンです。\nシンガポールから{来|き}ました"
+                "text": "はじめまして。{私|わたし}はワン・シューミンです。\nシンガポールから{来|き}ました",
+                "translation": "Schön, dich kennenzulernen. Ich bin ワン・シューミン\nIch komme aus Singapur"
             },
             {
                 "name": "ラフル",
-                "text": "はじめまして。ラフルです。\nインドから{来|き}ました。"
+                "text": "はじめまして。ラフルです。\nインドから{来|き}ました。",
+                "translation": "Schön, dich kennenzulernen. Ich bin ラフル\nIch komme aus Indien"
             },
             {
                 "name": "ワン",
-                "text": "どうぞよろしくお{願|ねが}いします。"
+                "text": "どうぞよろしくお{願|ねが}いします。",
+                "translation": "??? TODO"
             },
             {
                 "name": "ラフル",
-                "text": "よろしくお{願|ねが}いします。"
+                "text": "よろしくお{願|ねが}いします。",
+                "translation": "??? TODO"
             }
         ]
     }

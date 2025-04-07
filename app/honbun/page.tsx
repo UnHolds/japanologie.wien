@@ -17,6 +17,7 @@ export default function HonBunPage() {
     return (
         <div className="pt-8 h-full">
             <div className="text-6xl font-bold text-center mb-10">{format_furiana("{本|ほん}{文|ぶん}", false)} - HonBun</div>
+            <div className="text-center mb-10">This page needs a lot of help, pls submit the missing honbuns</div>
             <div className="flex justify-center gap-6 mb-5">
                 <div className="flex items-center gap-2">
                     <input type="checkbox" id="hide_furigana" className="w-5 h-5" checked={hideFurigana} onChange={() => {setHideFurigana(!hideFurigana)}}/>
@@ -38,7 +39,7 @@ export default function HonBunPage() {
                             </div>
                             <div/>
                         </button>
-                        {toShowHonbunId == i && <HonBun className="my-8" honbun={honbuns[0]} hide_furigana={hideFurigana} hide_translation={hideTranslation}/>}
+                        {toShowHonbunId == i && <HonBun className="my-8" honbun={h} hide_furigana={hideFurigana} hide_translation={hideTranslation}/>}
                     </div>
                 })}
             </div>

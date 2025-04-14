@@ -10,9 +10,11 @@ export default function KanjiTest() {
 
     const [draw, setDraw] = useState(true);
     const [kanji, setKanji] = useState<Kanji>(kanjis[0]);
+    const [maxBound, setMaxBound] = useState(300);
 
     function get_kanji() {
-        setKanji(kanjis[Math.floor(Math.random()*kanjis.length)])
+        const bound = maxBound > kanjis.length ? kanjis.length : maxBound;
+        setKanji(kanjis[Math.floor(Math.random()*bound)])
     }
 
     function skip() {
@@ -34,8 +36,12 @@ export default function KanjiTest() {
                 <div className="text-center text-2xl font-bold mb-2">Settings</div>
                 <div className="flex justify-center gap-6 mb-5">
                     <div className="flex items-center gap-2">
-                        <input type="checkbox" name="hide_kana" className="w-5 h-5" checked={draw} onChange={() => {setDraw(!draw)}}/>
-                        <label htmlFor="hide_kana" className="text-xl">Drawing Kanji (does nothing)</label>
+                        <input type="checkbox" name="draw_kanji" className="w-5 h-5" checked={draw} onChange={() => {setDraw(!draw)}}/>
+                        <label htmlFor="draw_kanji" className="text-xl">Drawing Kanji (does nothing)</label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <input type="number" name="kanji_num" className="w-17 h-5 bg-white text-black" min={0} value={maxBound} onChange={(e) => setMaxBound(Number(e.target.value))}/>
+                        <label htmlFor="kanji_num" className="text-xl">Max Kanji Nr</label>
                     </div>
                 </div>
             </div>

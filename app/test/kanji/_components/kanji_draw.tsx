@@ -30,9 +30,13 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
     const kanji_svg_url = "/kanji_svg/" + kanji.charCodeAt(0).toString(16).padStart(5, '0') + '.svg'
 
     const canvasRef = useRef<null|HTMLCanvasElement>(null)
-    var pos = { x: 0, y: 0 };
 
     const [show, setShow] = useState(false);
+    const [_kanji, _setKanji] = useState(kanji);
+    const pos = useRef({ x: 0, y: 0 })
+    const [init, setInit] = useState(false);
+
+
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -45,35 +49,44 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
             return
         }
 
-        window.addEventListener('resize', () => {
-            ctx.canvas.width = window.innerWidth;
-            ctx.canvas.height = window.innerHeight;
-        });
+        if(kanji != _kanji){
+            clearCanvas(canvasRef);
+            setShow(false);
+            _setKanji(kanji);
+        }
 
-        canvas.addEventListener("mousemove", (e) => {
-            if (e.buttons !== 1) return;
-            ctx.beginPath(); // begin
+        if(init == false){
+            console.log("init")
+            window.addEventListener('resize', () => {
+                ctx.canvas.width = window.innerWidth;
+                ctx.canvas.height = window.innerHeight;
+            });
 
-            ctx.lineWidth = 5;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = color;
-            ctx.moveTo(pos.x, pos.y);
-            pos.x = e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0);
-            pos.y = e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0);
-            ctx.lineTo(pos.x, pos.y); // to
-            ctx.stroke(); // draw it!
-        })
+            canvas.addEventListener("mousemove", (e) => {
+                if (e.buttons !== 1) return;
+                ctx.beginPath(); // begin
 
-        document.addEventListener('mousedown', (e) => {
-            pos.x = e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0);
-            pos.y = e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0);
-        });
-        document.addEventListener('mouseenter', (e) => {
-            pos.x = e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0);
-            pos.y = e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0);
-        });
+                ctx.lineWidth = 5;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = color;
+                ctx.moveTo(pos.current.x, pos.current.y);
+                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0)}
 
-    }, [canvasRef.current])
+                ctx.lineTo(pos.current.x, pos.current.y); // to
+                ctx.stroke(); // draw it!
+            })
+
+            document.addEventListener('mousedown', (e) => {
+                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0)}
+            });
+            document.addEventListener('mouseenter', (e) => {
+                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0)}
+            });
+            setInit(true);
+
+        }
+
+    }, [kanji, _kanji, color, pos, init])
 
 
     return (
@@ -86,7 +99,10 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
             </div>
             <div className="flex justify-around  mt-3">
                 <button className="bg-sky-700 p-2 rounded md:text-xl text-lg font-bold items-center" onClick={() => clearCanvas(canvasRef)}>Clear</button>
-                <button className="bg-sky-700 p-2 rounded md:text-xl text-lg font-bold items-center" onClick={() => setShow(!show)}>{show ? "Hide" : "Show"}</button>
+                <button className="bg-sky-700 p-2 rounded md:text-xl text-lg font-bold items-center" onClick={() => {
+
+                    setShow(!show)
+                    }}>{show ? "Hide" : "Show"}</button>
             </div>
         </div>
     );

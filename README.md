@@ -22,6 +22,10 @@ von der Universität erhalten haben
 - [ ] Vokabel-Liste
 - ...
 
+## Kanji SVGs
+
+Source: https://github.com/KanjiVG/kanjivg
+
 ## Contribution
 
 Sollte etwas fehlen, am besten einen Issue aufmachen. Falls du direkt etwas

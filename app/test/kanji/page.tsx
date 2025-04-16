@@ -47,12 +47,12 @@ export default function KanjiTest() {
                 </div>
             </div>
             <div className="flex justify-center mt-10">
-                <KanjiDraw kanji={"た"} name={kanji.main_meaning}/>
+                <KanjiDraw kanji={kanji.kanji} name={kanji.main_meaning}/>
             </div>
             <div className="flex gap-5 justify-center w-full mt-20">
-                <button className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={correct}>Correct</button>
-                <button className="flex bg-sky-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={skip}>Skip</button>
                 <button className="flex bg-rose-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={wrong}>Wrong</button>
+                <button className="flex bg-sky-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={skip}>Skip</button>
+                <button className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={correct}>Correct</button>
             </div>
 
         </div>

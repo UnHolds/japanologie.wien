@@ -107,8 +107,8 @@ export default function KanaTest() {
                 <KanjiDraw kanji={kana} name={toRomaji(kana)} height={size} width={size}/>
             </div>
             <div className="flex gap-5 justify-center w-full mt-20">
-                <button className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={correct}>Correct</button>
                 <button className="flex bg-rose-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={wrong}>Wrong</button>
+                <button className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={correct}>Correct</button>
             </div>
 
         </div>

@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import KanjiDraw from "../kanji/_components/kanji_draw";
 import { toRomaji } from 'wanakana';
 
@@ -11,9 +11,6 @@ export default function KanaTest() {
     const [dakutenKata, setDakutenKata] = useState(false);
     const [kana, setKana] = useState<string>("た");
     const [list, setList] = useState<string[]>(['空']);
-
-
-    const [size, setSize] = useState(250);
 
     function get_kana(l: string[]) {
         setKana(l[Math.floor(Math.random()*l.length)]);
@@ -57,26 +54,6 @@ export default function KanaTest() {
         get_kana(l)
     }, [hiragana, katakana, dakutenHira, dakutenKata])
 
-    useEffect(() => {
-        if(typeof window != "undefined" && window.innerWidth < 500){
-            setSize(window.innerWidth-3);
-        }else{
-            setSize(250)
-        }
-    }, [])
-
-    useLayoutEffect(() => {
-        function updateSize() {
-            if(typeof window != "undefined" && window.innerWidth < 500){
-                setSize(window.innerWidth-3);
-            }else{
-                setSize(200)
-            }
-        }
-        window.addEventListener('resize', updateSize);
-        updateSize();
-        return () => window.removeEventListener('resize', updateSize);
-    }, []);
 
     return (
         <div>
@@ -104,7 +81,7 @@ export default function KanaTest() {
             </div>
             <div className="text-center text-2xl  font-bold">Items left: {list.length}</div>
             <div className="flex justify-center mt-10">
-                <KanjiDraw kanji={kana} name={toRomaji(kana)} height={size} width={size}/>
+                <KanjiDraw kanji={kana} name={toRomaji(kana)} height={250} width={250}/>
             </div>
             <div className="flex gap-5 justify-center w-full mt-20">
                 <button className="flex bg-rose-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={wrong}>Wrong</button>

@@ -28,6 +28,7 @@ export default function KanjiTest() {
     function wrong() {
         get_kanji()
     }
+    //kanji.kanji
 
     return (
         <div>
@@ -46,7 +47,7 @@ export default function KanjiTest() {
                 </div>
             </div>
             <div className="flex justify-center mt-10">
-                <KanjiDraw kanji={kanji.kanji} name={kanji.main_meaning}/>
+                <KanjiDraw kanji={"た"} name={kanji.main_meaning}/>
             </div>
             <div className="flex gap-5 justify-center w-full mt-20">
                 <button className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={correct}>Correct</button>

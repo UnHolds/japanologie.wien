@@ -14,7 +14,7 @@ export default function KanjiCustomSettings({ setKanjiList, setQuestionTypes}: P
 
     const textRef = useRef<null|HTMLInputElement>(null)
 
-    let loadKanji = () => {
+    const loadKanji = () => {
         const val = textRef.current?.value;
         if(val == undefined){
             return

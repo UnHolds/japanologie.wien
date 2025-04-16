@@ -18,7 +18,7 @@ export default function KanjiListSettings({ setKanjiList, setQuestionTypes}: Pro
 
     useEffect(() => {
         setKanjiList(kanjis.slice(start, end + 1));
-    }, [start, end])
+    }, [start, end, setKanjiList])
 
     return (
         <div className="flex justify-center gap-6 mb-5">

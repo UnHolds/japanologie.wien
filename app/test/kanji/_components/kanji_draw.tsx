@@ -26,7 +26,7 @@ function clearCanvas(canvasRef: RefObject<HTMLCanvasElement | null>) {
 }
 
 
-export default function KanjiDraw({ kanji, name, height = 200, width = 200, color = '#04ebfb' } : Props) {
+export default function KanjiDraw({ kanji, name, height = 250, width = 250, color = '#04ebfb' } : Props) {
     const kanji_svg_url = "/kanji_svg/" + kanji.charCodeAt(0).toString(16).padStart(5, '0') + '.svg'
 
     const canvasRef = useRef<null|HTMLCanvasElement>(null)

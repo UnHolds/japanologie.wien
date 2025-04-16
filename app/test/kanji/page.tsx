@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { ChangeEventHandler, useEffect, useState } from "react";
 import KanjiDraw from "./_components/kanji_draw";
 
 import { Kanji } from "@/app/_utils/kanji_type"
@@ -37,7 +37,7 @@ export default function KanjiTest() {
         });
         setCurrentList(new_cur);
         get_kanji(new_cur);
-    }, [kanjiList])
+    }, [kanjiList, questionTypes.draw])
 
     function get_kanji(list: {k: Kanji, qt: QuestionType}[]) {
 
@@ -60,13 +60,13 @@ export default function KanjiTest() {
     }
 
     function correct() {
-        const {k, qt} = currentList.filter(({k, qt}) => k == kanji)[0];
+        const {k, qt} = currentList.filter((v) => v.k == kanji)[0];
         //TODO add new question types
         if(currentQuestionType == QuestionTypeEnum.DRAW){
             qt.draw = true;
         }
 
-        const new_list = currentList.filter(({k, qt}) => k != kanji);
+        const new_list = currentList.filter((v) => v.k != kanji);
         if(Object.entries(qt).filter(v => v[1] == false).length != 0){
             new_list.push({k: k, qt: qt})
         }
@@ -80,7 +80,7 @@ export default function KanjiTest() {
 
 
 
-    let handleOptionChange = (changeEvent: any) => {
+    const handleOptionChange: ChangeEventHandler<HTMLInputElement> = (changeEvent) => {
         setType(changeEvent.target.value);
     };
 

@@ -36,7 +36,24 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
     const pos = useRef({ x: 0, y: 0 })
     const [init, setInit] = useState(false);
 
+    const [hw, setHW] = useState({h: height, w: width});
 
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if(canvas == null){
+            return
+        }
+        const ctx = canvas.getContext('2d')
+
+        if(ctx == null){
+            return
+        }
+
+        ctx.canvas.width = width;
+        ctx.canvas.height = height;
+        setHW({h: height, w: width})
+    }, [height, width])
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -55,13 +72,13 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
             _setKanji(kanji);
         }
 
-        if(init == false){
-            console.log("init")
-            window.addEventListener('resize', () => {
-                ctx.canvas.width = window.innerWidth;
-                ctx.canvas.height = window.innerHeight;
-            });
 
+        if(init == false){
+
+            window.addEventListener('resize', () => {
+                ctx.canvas.width = width;
+                ctx.canvas.height = height;
+            });
 
             canvas.addEventListener("mousemove", (e) => {
                 if (e.buttons !== 1) return;
@@ -72,7 +89,6 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
                 ctx.strokeStyle = color;
                 ctx.moveTo(pos.current.x, pos.current.y);
                 pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0) + window.scrollY}
-
                 ctx.lineTo(pos.current.x, pos.current.y); // to
                 ctx.stroke(); // draw it!
             })
@@ -80,21 +96,8 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
             canvas.addEventListener("touchstart", function (e) {
                 if (e.target == canvas) {
                     e.preventDefault();
-                  }
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent("mousedown", {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                canvas.dispatchEvent(mouseEvent);
-            }, false);
-
-            canvas.addEventListener("touchend", function (e) {
-                if (e.target == canvas) {
-                    e.preventDefault();
                 }
-                const mouseEvent = new MouseEvent("mouseup", {});
-                canvas.dispatchEvent(mouseEvent);
+                pos.current = {x: e.touches[0].clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.touches[0].clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0) + window.scrollY}
             }, false);
 
             canvas.addEventListener("touchmove", function (e) {
@@ -107,7 +110,6 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
                     clientY: touch.clientY,
                     buttons: 1
                 });
-                console.log("move move")
                 canvas.dispatchEvent(mouseEvent);
             }, false);
 
@@ -122,7 +124,7 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
 
         }
 
-    }, [kanji, _kanji, color, pos, init])
+    }, [kanji, _kanji, color, pos, init, width, height])
 
 
     return (
@@ -130,8 +132,8 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
         <div className="size-fit">
             <div className="text-center text-3xl font-bold mb-3">{name}</div>
             <div className="relative border-3 size-fit">
-                <canvas ref={canvasRef} className={`z-10 absolute top-0 ${show ? "opacity-80" : "opacity-100"}`} width={width} height={height} />
-                <Image src={kanji_svg_url} alt="Kanji SVG" width={width} height={height} className={`dark:invert ${show ? "opacity-100" : "opacity-0"}`} />
+                <canvas ref={canvasRef} className={`z-10 absolute top-0 ${show ? "opacity-80" : "opacity-100"}`} width={hw.w} height={hw.h} />
+                <Image src={kanji_svg_url} alt="Kanji SVG" width={hw.w} height={hw.h} className={`dark:invert ${show ? "opacity-100" : "opacity-0"}`} />
             </div>
             <div className="flex justify-around  mt-3">
                 <button className="bg-sky-700 p-2 rounded md:text-xl text-lg font-bold items-center" onClick={() => clearCanvas(canvasRef)}>Clear</button>

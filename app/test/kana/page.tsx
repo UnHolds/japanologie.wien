@@ -13,7 +13,7 @@ export default function KanaTest() {
     const [list, setList] = useState<string[]>(['空']);
 
 
-    const [size, setSize] = useState(200);
+    const [size, setSize] = useState(250);
 
     function get_kana(l: string[]) {
         setKana(l[Math.floor(Math.random()*l.length)]);
@@ -61,7 +61,7 @@ export default function KanaTest() {
         if(typeof window != "undefined" && window.innerWidth < 500){
             setSize(window.innerWidth-3);
         }else{
-            setSize(200)
+            setSize(250)
         }
     }, [])
 

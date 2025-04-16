@@ -37,6 +37,7 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
     const [init, setInit] = useState(false);
 
     const [hw, setHW] = useState({h: height, w: width});
+    const [scale, setScale] = useState(1.0);
 
 
     useEffect(() => {
@@ -50,10 +51,10 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
             return
         }
 
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        ctx.canvas.width = width * scale;
+        ctx.canvas.height = height * scale;
         setHW({h: height, w: width})
-    }, [height, width])
+    }, [height, width, scale])
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -74,11 +75,6 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
 
 
         if(init == false){
-
-            window.addEventListener('resize', () => {
-                ctx.canvas.width = width;
-                ctx.canvas.height = height;
-            });
 
             canvas.addEventListener("mousemove", (e) => {
                 if (e.buttons !== 1) return;
@@ -132,13 +128,15 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
         <div className="size-fit">
             <div className="text-center text-3xl font-bold mb-3">{name}</div>
             <div className="relative border-3 size-fit">
-                <canvas ref={canvasRef} className={`z-10 absolute top-0 ${show ? "opacity-80" : "opacity-100"}`} width={hw.w} height={hw.h} />
-                <Image src={kanji_svg_url} alt="Kanji SVG" width={hw.w} height={hw.h} className={`dark:invert ${show ? "opacity-100" : "opacity-0"}`} />
+                <canvas ref={canvasRef} className={`z-10 absolute top-0 ${show ? "opacity-80" : "opacity-100"}`} width={hw.w * scale} height={hw.h * scale} />
+                <Image src={kanji_svg_url} alt="Kanji SVG" width={hw.w * scale} height={hw.h * scale} className={`dark:invert ${show ? "opacity-100" : "opacity-0"}`} />
             </div>
-            <div className="flex justify-around  mt-3">
+
+            <div className="flex justify-around mt-3 gap-2">
+                <button className="bg-sky-700 p-2 rounded md:text-xl text-lg font-bold items-center w-10" onClick={() => setScale(window.innerWidth >= hw.w * (scale + 0.1) ? scale + 0.1 : scale)}>+</button>
+                <button className="bg-sky-700 p-2 rounded md:text-xl text-lg font-bold items-center w-10" onClick={() => setScale(scale == 0.1 ? 0.1 : scale - 0.1)}>-</button>
                 <button className="bg-sky-700 p-2 rounded md:text-xl text-lg font-bold items-center" onClick={() => clearCanvas(canvasRef)}>Clear</button>
                 <button className="bg-sky-700 p-2 rounded md:text-xl text-lg font-bold items-center" onClick={() => {
-
                     setShow(!show)
                     }}>{show ? "Hide" : "Show"}</button>
             </div>

@@ -59,7 +59,7 @@ export default function KanaTest() {
             <div>
                 <div className="text-center text-6xl font-bold my-5">Kana-Test</div>
                 <div className="text-center text-2xl font-bold mb-2">Settings</div>
-                <div className="flex justify-center gap-6 mb-5">
+                <div className="flex justify-center gap-6 mb-5 md:flex-row flex-col items-center">
                     <div className="flex items-center gap-2">
                         <input type="checkbox" name="draw_hiragana" className="w-5 h-5" checked={hiragana} onChange={() => {setHiragana(!hiragana)}}/>
                         <label htmlFor="draw_hiragana" className="text-xl">Hiragana</label>
@@ -80,7 +80,7 @@ export default function KanaTest() {
             </div>
             <div className="text-center text-2xl  font-bold">Items left: {list.length}</div>
             <div className="flex justify-center mt-10">
-                <KanjiDraw kanji={kana} name={toRomaji(kana)}/>
+                <KanjiDraw kanji={kana} name={toRomaji(kana)} height={window.outerWidth < 500 ? window.outerWidth : 200} width={window.outerWidth < 500 ? window.outerWidth : 200}/>
             </div>
             <div className="flex gap-5 justify-center w-full mt-20">
                 <button className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={correct}>Correct</button>

@@ -70,17 +70,17 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = color;
                 ctx.moveTo(pos.current.x, pos.current.y);
-                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0)}
+                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0) + window.scrollY}
 
                 ctx.lineTo(pos.current.x, pos.current.y); // to
                 ctx.stroke(); // draw it!
             })
 
             document.addEventListener('mousedown', (e) => {
-                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0)}
+                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0) + window.scrollY}
             });
             document.addEventListener('mouseenter', (e) => {
-                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0)}
+                pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0) + window.scrollY}
             });
             setInit(true);
 

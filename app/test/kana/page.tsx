@@ -80,7 +80,7 @@ export default function KanaTest() {
             </div>
             <div className="text-center text-2xl  font-bold">Items left: {list.length}</div>
             <div className="flex justify-center mt-10">
-                <KanjiDraw kanji={kana} name={toRomaji(kana)} height={window && window.outerWidth < 500 ? window.outerWidth : 200} width={window && window.outerWidth < 500 ? window.outerWidth : 200}/>
+                <KanjiDraw kanji={kana} name={toRomaji(kana)} height={typeof window !== "undefined" && window.outerWidth < 500 ? window.outerWidth : 200} width={typeof window !== "undefined" && window.outerWidth < 500 ? window.outerWidth : 200}/>
             </div>
             <div className="flex gap-5 justify-center w-full mt-20">
                 <button className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45" onClick={correct}>Correct</button>

@@ -62,6 +62,7 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
                 ctx.canvas.height = window.innerHeight;
             });
 
+
             canvas.addEventListener("mousemove", (e) => {
                 if (e.buttons !== 1) return;
                 ctx.beginPath(); // begin
@@ -75,6 +76,41 @@ export default function KanjiDraw({ kanji, name, height = 200, width = 200, colo
                 ctx.lineTo(pos.current.x, pos.current.y); // to
                 ctx.stroke(); // draw it!
             })
+
+            canvas.addEventListener("touchstart", function (e) {
+                if (e.target == canvas) {
+                    e.preventDefault();
+                  }
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent("mousedown", {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }, false);
+
+            canvas.addEventListener("touchend", function (e) {
+                if (e.target == canvas) {
+                    e.preventDefault();
+                }
+                const mouseEvent = new MouseEvent("mouseup", {});
+                canvas.dispatchEvent(mouseEvent);
+            }, false);
+
+            canvas.addEventListener("touchmove", function (e) {
+                if (e.target == canvas) {
+                    e.preventDefault();
+                }
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent("mousemove", {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    buttons: 1
+                });
+                console.log("move move")
+                canvas.dispatchEvent(mouseEvent);
+            }, false);
+
 
             document.addEventListener('mousedown', (e) => {
                 pos.current = {x: e.clientX - canvas.offsetLeft - (canvas.parentElement?.offsetLeft || 0), y: e.clientY - canvas.offsetTop - (canvas.parentElement?.offsetTop || 0) + window.scrollY}

@@ -5,7 +5,6 @@ import KanjiDraw from "./_components/kanji_draw";
 import { Kanji } from "@/app/_utils/kanji_type"
 import KanjiCustomSettings from "./_components/kanji_custom_settings";
 import KanjiListSettings from "./_components/kanji_list_settings";
-import { toast } from "react-toastify";
 
 export interface QuestionType {
     draw: boolean
@@ -41,9 +40,12 @@ export default function KanjiTest() {
 
     function get_kanji(list: {k: Kanji, qt: QuestionType}[]) {
 
+        //filter all kanji that are done
+        list = list.filter((v) => Object.entries(v.qt).filter((vv) => vv[1] == false).length > 0)
+
         if(list.length == 0){
-            toast.success("All done");
             setCurrentQuestionType(QuestionTypeEnum.DONE);
+            setCurrentList(list);
             return;
         }
 

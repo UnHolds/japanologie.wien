@@ -2,6 +2,7 @@ import { Kanji } from "@/app/_utils/kanji_type";
 import { useRef } from "react";
 import { QuestionType } from "../page";
 import kanjis from "../../../assets/kanji.json"
+import { toast } from "react-toastify";
 
 interface Props {
     setKanjiList: ((kl: Kanji[]) => void),
@@ -19,7 +20,7 @@ export default function KanjiCustomSettings({ setKanjiList, setQuestionTypes}: P
             return
         }
         const kanji_list = kanjis.filter((k) => val.includes(k.kanji));
-        alert("Found " + kanji_list.length + " out of " + val.length + " kanjis");
+        toast.info("Found " + kanji_list.length + " out of " + val.length + " kanjis");
 
         if(textRef.current != null){
             textRef.current.value = "";

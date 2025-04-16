@@ -16,6 +16,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-fontawesome": "^1.7.1",
+    "react-toastify": "^11.0.5",
     "wanakana": "^5.3.1"
   },
   "devDependencies": {

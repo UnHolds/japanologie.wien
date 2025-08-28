@@ -30,7 +30,9 @@ export default function RootLayout({
         className={`h-screen ${geistSans.variable} ${geistMono.variable} antialiased `}
         >
         <TopBar />
-        {children}
+        <div className="h-[calc(100vh-76px)]">
+          {children}
+        </div>
         <ToastContainer
           position="top-center"
           autoClose={5000}

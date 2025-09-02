@@ -19,7 +19,7 @@ enum ReviewType {
     Writing
 }
 
-
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 function shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -39,7 +39,7 @@ function toReview(assignment: Assignment): Review {
 }
 
 function getReviewType(review: Review): ReviewType {
-    let type = [ReviewType.Reading, ReviewType.Writing, ReviewType.Meaning];
+    const type = [ReviewType.Reading, ReviewType.Writing, ReviewType.Meaning];
     shuffleArray(type);
 
     for(let i = 0; i < 3; i++){
@@ -68,7 +68,7 @@ export default function Review() {
     useEffect(() => {
         get_assignments().then(r => {
             shuffleArray(r); //for random order
-            let active = r.slice(0, Math.min(ACTIVE_QUEUE_SIZE, r.length)).map(a => toReview(a));
+            const active = r.slice(0, Math.min(ACTIVE_QUEUE_SIZE, r.length)).map(a => toReview(a));
             setActiveQueue(active);
             if(r.length > ACTIVE_QUEUE_SIZE){
                 setAssignments(r.slice(ACTIVE_QUEUE_SIZE))

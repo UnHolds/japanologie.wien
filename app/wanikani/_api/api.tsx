@@ -80,9 +80,9 @@ export async function get_subject_with_assignment(assignment: Assignment): Promi
 
     switch(assignment.subject_type) {
         case SubjectType.Radical:
-            return (await get_data<any>(url)).data;
+            return (await get_data<WaniKaniObject<SubjectRadical>>(url)).data;
         case SubjectType.Kanji:
-            return (await get_data<WaniKaniObject<any>>(url)).data;
+            return (await get_data<WaniKaniObject<SubjectKanji>>(url)).data;
         case SubjectType.Vocabulary:
             return (await get_data<WaniKaniObject<SubjectVocabulary>>(url)).data;
         case SubjectType.KanaVocabulary:

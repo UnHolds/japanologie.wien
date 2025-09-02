@@ -36,7 +36,11 @@ export interface SubjectRadical extends SubjectBase {
 interface CharacterImage {
     url: string,
     content_type: string,
-    metadata: any
+    metadata: MetadataObject
+    inline_styles: boolean
+}
+
+interface MetadataObject  {
     inline_styles: boolean
 }
 

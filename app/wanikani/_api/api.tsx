@@ -1,13 +1,15 @@
 import { get_settings  } from "@/app/user/settings";
+import { SubjectBase, SubjectKanaVocabulary, SubjectKanji, SubjectRadical, SubjectVocabulary } from "./subject";
 
 
 
-enum SubjectType {
-    Radical,
-    Kanji,
-    Vocabulary,
-    KanaVocabulary
+export enum SubjectType {
+    Radical = "radical",
+    Kanji = "kanji",
+    Vocabulary = "vocabulary",
+    KanaVocabulary = "kana_vocabulary"
 }
+
 
 interface WaniKaniObject<Type> {
     id: number,
@@ -60,8 +62,30 @@ async function get_data<T>(url: string) {
     return await response.json() as T
 }
 
-export async function get_assignments(): Promise<[Assignment]> {
+export async function get_assignments(): Promise<Assignment[]> {
     const url = API_URL + "assignments?immediately_available_for_review";
+    return (await get_data<WaniKaniObject<[WaniKaniObject<Assignment>]>>(url)).data.map(d => d.data);
+}
 
-    return (await get_data<WaniKaniObject<[Assignment]>>(url)).data;
+
+export async function get_subject_with_id<T extends SubjectBase>(id: number): Promise<T> {
+
+    const url = API_URL + "subjects/" + id;
+    return (await get_data<WaniKaniObject<T>>(url)).data;
+}
+
+export async function get_subject_with_assignment(assignment: Assignment): Promise<SubjectRadical | SubjectKanji | SubjectVocabulary | SubjectKanaVocabulary> {
+
+    const url = API_URL + "subjects/" + assignment.subject_id;
+
+    switch(assignment.subject_type) {
+        case SubjectType.Radical:
+            return (await get_data<any>(url)).data;
+        case SubjectType.Kanji:
+            return (await get_data<WaniKaniObject<any>>(url)).data;
+        case SubjectType.Vocabulary:
+            return (await get_data<WaniKaniObject<SubjectVocabulary>>(url)).data;
+        case SubjectType.KanaVocabulary:
+            return (await get_data<WaniKaniObject<SubjectKanaVocabulary>>(url)).data;
+    }
 }

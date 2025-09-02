@@ -2,7 +2,7 @@
 
 import KanjiBox from "./_components/kanji_box";
 
-import kanjis from "../assets/kanji.json";
+import kanjis from "../../assets/kanji.json";
 import { useState } from "react";
 
 export default function KanjiList() {

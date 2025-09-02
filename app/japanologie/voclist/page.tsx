@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import vocs from "../assets/voc.json";
+import vocs from "../../assets/voc.json";
 import VocBox from "./_components/voc_box";
 
 export default function VocList() {

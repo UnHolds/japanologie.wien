@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
-import KanjiDraw from "../kanji/_components/kanji_draw";
+import KanjiDraw from "../japanologie/kanji_test/_components/kanji_draw";
 import { toRomaji } from 'wanakana';
 
 export default function KanaTest() {

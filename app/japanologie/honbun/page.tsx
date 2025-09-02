@@ -1,8 +1,8 @@
 "use client"
 import HonBun from "./_components/honbun";
 
-import honbuns from "../assets/honbun.json";
-import { format_furiana } from "../_utils/kanji_utils";
+import honbuns from "../../assets/honbun.json";
+import { format_furiana } from "../../_utils/kanji_utils";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";

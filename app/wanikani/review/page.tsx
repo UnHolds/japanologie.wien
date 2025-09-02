@@ -64,6 +64,7 @@ export default function Review() {
     const [activeQueue, setActiveQueue] = useState<Review[]>([]);
     const [currentSubject, setCurrentSubject] = useState<SubjectRadical | SubjectKanji | SubjectVocabulary | SubjectKanaVocabulary>();
     const [reviewType, setReviewType] = useState(ReviewType.Writing);
+
     useEffect(() => {
         get_assignments().then(r => {
             shuffleArray(r); //for random order

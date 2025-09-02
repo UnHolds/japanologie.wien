@@ -14,9 +14,9 @@ interface Review {
 }
 
 enum ReviewType {
-    Reading,
-    Meaning,
-    Writing
+    Reading = "Reading",
+    Meaning = "Meaning",
+    Writing = "Writing"
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
@@ -81,6 +81,13 @@ export default function Review() {
     }, []);
 
     return <div>
-        Some
+        <div>Assignments remain: {assignments.length}</div>
+        <div>Active remain: {activeQueue.length}</div>
+
+        <div>Reading: {activeQueue.length > 0 && activeQueue[0].reading + ""}</div>
+        <div>Meaning: {activeQueue.length > 0 && activeQueue[0].meaning + ""}</div>
+        <div>Writing: {activeQueue.length > 0 && activeQueue[0].writing + ""}</div>
+        <div>Current Type: {reviewType}</div>
+        <div>Subject: {currentSubject?.level}</div>
     </div>
 }

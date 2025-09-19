@@ -1,93 +1,117 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
-import { Assignment, get_assignments, get_subject_with_assignment, SubjectType } from "../_api/api";
+import {
+  Assignment,
+  get_assignments,
+  get_subject_with_assignment,
+  SubjectType,
+} from "../_api/api";
 import { toast } from "react-toastify";
-import { SubjectKanaVocabulary, SubjectKanji, SubjectRadical, SubjectVocabulary } from "../_api/subject";
-
+import {
+  SubjectKanaVocabulary,
+  SubjectKanji,
+  SubjectRadical,
+  SubjectVocabulary,
+} from "../_api/subject";
 
 interface Review {
-    reading: boolean,
-    meaning: boolean,
-    writing: boolean
-    assignment: Assignment
+  reading: boolean;
+  meaning: boolean;
+  writing: boolean;
+  assignment: Assignment;
 }
 
 enum ReviewType {
-    Reading = "Reading",
-    Meaning = "Meaning",
-    Writing = "Writing"
+  Reading = "Reading",
+  Meaning = "Meaning",
+  Writing = "Writing",
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 function shuffleArray(array: any[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
 
 const ACTIVE_QUEUE_SIZE = 10;
 
 function toReview(assignment: Assignment): Review {
-    return {
-        reading: assignment.subject_type == SubjectType.Radical, //only radicals have no reading
-        meaning: false,
-        writing: assignment.subject_type != SubjectType.Kanji, //only kanji have writing
-        assignment: assignment
-    }
+  return {
+    reading: assignment.subject_type == SubjectType.Radical, //only radicals have no reading
+    meaning: false,
+    writing: assignment.subject_type != SubjectType.Kanji, //only kanji have writing
+    assignment: assignment,
+  };
 }
 
 function getReviewType(review: Review): ReviewType {
-    const type = [ReviewType.Reading, ReviewType.Writing, ReviewType.Meaning];
-    shuffleArray(type);
+  const type = [ReviewType.Reading, ReviewType.Writing, ReviewType.Meaning];
+  shuffleArray(type);
 
-    for(let i = 0; i < 3; i++){
-        if(type[i] == ReviewType.Reading && review.reading == false){
-            return ReviewType.Reading;
-        }
-        if(type[i] == ReviewType.Writing && review.writing == false){
-            return ReviewType.Writing;
-        }
-        if(type[i] == ReviewType.Meaning && review.meaning == false){
-            return ReviewType.Meaning;
-        }
+  for (let i = 0; i < 3; i++) {
+    if (type[i] == ReviewType.Reading && review.reading == false) {
+      return ReviewType.Reading;
     }
+    if (type[i] == ReviewType.Writing && review.writing == false) {
+      return ReviewType.Writing;
+    }
+    if (type[i] == ReviewType.Meaning && review.meaning == false) {
+      return ReviewType.Meaning;
+    }
+  }
 
-    toast.error("Found assignment with no valid review type")
-    //should not be reached
-    return ReviewType.Writing;
+  toast.error("Found assignment with no valid review type");
+  //should not be reached
+  return ReviewType.Writing;
 }
 
 export default function Review() {
-    const [assignments, setAssignments] = useState<Assignment[]>([]);
-    const [activeQueue, setActiveQueue] = useState<Review[]>([]);
-    const [currentSubject, setCurrentSubject] = useState<SubjectRadical | SubjectKanji | SubjectVocabulary | SubjectKanaVocabulary>();
-    const [reviewType, setReviewType] = useState(ReviewType.Writing);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [activeQueue, setActiveQueue] = useState<Review[]>([]);
+  const [currentSubject, setCurrentSubject] = useState<
+    SubjectRadical | SubjectKanji | SubjectVocabulary | SubjectKanaVocabulary
+  >();
+  const [reviewType, setReviewType] = useState(ReviewType.Writing);
 
-    useEffect(() => {
-        get_assignments().then(r => {
-            shuffleArray(r); //for random order
-            const active = r.slice(0, Math.min(ACTIVE_QUEUE_SIZE, r.length)).map(a => toReview(a));
-            setActiveQueue(active);
-            if(r.length > ACTIVE_QUEUE_SIZE){
-                setAssignments(r.slice(ACTIVE_QUEUE_SIZE))
-            }
+  useEffect(() => {
+    get_assignments()
+      .then((r) => {
+        shuffleArray(r); //for random order
+        const active = r
+          .slice(0, Math.min(ACTIVE_QUEUE_SIZE, r.length))
+          .map((a) => toReview(a));
+        setActiveQueue(active);
+        if (r.length > ACTIVE_QUEUE_SIZE) {
+          setAssignments(r.slice(ACTIVE_QUEUE_SIZE));
+        }
 
-            setReviewType(getReviewType(active[0]));
-            get_subject_with_assignment(active[0].assignment).then(r => setCurrentSubject(r));
+        setReviewType(getReviewType(active[0]));
+        get_subject_with_assignment(active[0].assignment).then((r) =>
+          setCurrentSubject(r),
+        );
+      })
+      .catch(() => toast.error("Could not fetch assignments"));
+  }, []);
 
-        }).catch(() => toast.error("Could not fetch assignments"));
-    }, []);
+  return (
+    <div>
+      <div>Assignments remain: {assignments.length}</div>
+      <div>Active remain: {activeQueue.length}</div>
 
-    return <div>
-        <div>Assignments remain: {assignments.length}</div>
-        <div>Active remain: {activeQueue.length}</div>
-
-        <div>Reading: {activeQueue.length > 0 && activeQueue[0].reading + ""}</div>
-        <div>Meaning: {activeQueue.length > 0 && activeQueue[0].meaning + ""}</div>
-        <div>Writing: {activeQueue.length > 0 && activeQueue[0].writing + ""}</div>
-        <div>Current Type: {reviewType}</div>
-        <div>Subject: {currentSubject?.level}</div>
+      <div>
+        Reading: {activeQueue.length > 0 && activeQueue[0].reading + ""}
+      </div>
+      <div>
+        Meaning: {activeQueue.length > 0 && activeQueue[0].meaning + ""}
+      </div>
+      <div>
+        Writing: {activeQueue.length > 0 && activeQueue[0].writing + ""}
+      </div>
+      <div>Current Type: {reviewType}</div>
+      <div>Subject: {currentSubject?.level}</div>
     </div>
+  );
 }

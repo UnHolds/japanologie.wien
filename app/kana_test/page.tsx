@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import KanjiDraw from "../japanologie/kanji_test/_components/kanji_draw";
 import { toRomaji } from "wanakana";
+import KanjiDraw from "../_components/kanji_draw/kanji_draw";
 
 export default function KanaTest() {
   const [hiragana, setHiragana] = useState(true);
@@ -10,7 +10,7 @@ export default function KanaTest() {
   const [dakutenKata, setDakutenKata] = useState(false);
   const [kana, setKana] = useState<string>("た");
   const [list, setList] = useState<string[]>(["空"]);
-
+  const [isWrong, setIsWrong] = useState(false);
   function get_kana(l: string[]) {
     setKana(l[Math.floor(Math.random() * l.length)]);
   }
@@ -129,30 +129,35 @@ export default function KanaTest() {
           </div>
         </div>
       </div>
-      <div className="text-center text-2xl  font-bold">
+      <div className="text-center text-2xl font-bold">
         Items left: {list.length}
       </div>
-      <div className="flex justify-center mt-10">
-        <KanjiDraw
-          kanji={kana}
-          name={toRomaji(kana)}
-          height={250}
-          width={250}
-        />
-      </div>
-      <div className="flex gap-5 justify-center w-full mt-20">
-        <button
-          className="flex bg-rose-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45"
-          onClick={wrong}
-        >
-          Wrong
-        </button>
-        <button
-          className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45"
-          onClick={correct}
-        >
-          Correct
-        </button>
+      <div className="flex items-center mt-10 w-full flex-col">
+        <div className="text-4xl">{toRomaji(kana)}</div>
+        <div className="w-100">
+          <KanjiDraw
+            kanji={kana}
+            verify_callbackAction={(cor) => {
+              if (cor) {
+                setIsWrong(false);
+                correct();
+              } else {
+                setIsWrong(true);
+              }
+            }}
+          />
+        </div>
+        {isWrong && (
+          <div
+            className="flex bg-red-500 m-2 p-2 rounded md:text-2xl text-xl font-bold items-center"
+            onClick={() => {
+              setIsWrong(false);
+              wrong();
+            }}
+          >
+            Wrong - Next
+          </div>
+        )}
       </div>
     </div>
   );

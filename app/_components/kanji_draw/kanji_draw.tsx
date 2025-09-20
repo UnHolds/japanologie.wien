@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 interface Props {
   kanji: string;
-  verify_callback: (correct: boolean) => void;
+  verify_callbackAction: (correct: boolean) => void;
 }
 
 interface Point {
@@ -212,7 +212,13 @@ async function verify_kanji(
     const percent = distance / Math.sqrt(canvas.height * canvas.width);
 
     if (percent > verify_threshold) {
-      console.log("verify threshold reached");
+      console.log(
+        "verify threshold reached: " +
+          Math.round(percent * 100) +
+          "% of " +
+          Math.round(verify_threshold * 100) +
+          "%",
+      );
       return false;
     }
   }
@@ -367,14 +373,14 @@ function draw_background(ctx: CanvasRenderingContext2D) {
   ctx.stroke();
   ctx.closePath();
 }
-export default function KanjiDraw({ kanji, verify_callback }: Props) {
+export default function KanjiDraw({ kanji, verify_callbackAction }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [mouseDown, setMouseDown] = useState(false);
   const [drawPoints, setDrawPoints] = useState<Point[]>([]);
   const [lines, setLines] = useState<Point[][]>([]);
-  const verify_threshold = 0.05;
-  const max_move = 0.1;
+  const verify_threshold = 0.1;
+  const max_move = 0.2;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -384,8 +390,8 @@ export default function KanjiDraw({ kanji, verify_callback }: Props) {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    draw_background(context);
-  }, []);
+    clear_canvas(canvasRef.current, setDrawPoints, setLines);
+  }, [kanji]);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -447,7 +453,12 @@ export default function KanjiDraw({ kanji, verify_callback }: Props) {
               true,
               verify_threshold,
               max_move,
-            ).then((r) => verify_callback(r))
+            ).then((r) => {
+              if (r == false) {
+                show_svg_in_canvas(canvasRef.current, kanji);
+              }
+              verify_callbackAction(r);
+            })
           }
         >
           Verify

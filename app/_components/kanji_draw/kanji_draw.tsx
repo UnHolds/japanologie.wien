@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-
+import { kabsch } from "./kapsch";
 interface Props {
   kanji: string;
   verify_callbackAction: (correct: boolean) => void;
@@ -87,8 +87,11 @@ async function verify_kanji(
   kanji: string,
   canvas: HTMLCanvasElement | null,
   debug: boolean,
-  verify_threshold: number, //percent
-  max_move: number, //percent how far it can correct
+  max_distance: number, //percent  0-1
+  max_translation: number, //percent how far it can correct (0-1)
+  max_rotation: number, // degree
+  max_scale: number[], //[min, max]
+  scale_enable: boolean,
 ): Promise<boolean> {
   const svg_txt = await loadSVG(kanji);
   const parser = new DOMParser();
@@ -122,13 +125,13 @@ async function verify_kanji(
   const [vx, vy, vw, vh] = viewbox.split(" ").map(Number);
   const scaleX = canvas_settings.width / vw;
   const scaleY = canvas_settings.height / vh;
-  const distances = [];
+  const scaledPaths = [];
 
   for (let lineIdx = 0; lineIdx < svg_paths.length; lineIdx++) {
     const path_len = svg_paths[lineIdx].getTotalLength();
     const num_points = lines[lineIdx].length;
 
-    //calculate the distances between the points
+    //scale the svg line to the same dimension as the canvas
     const line_point_dist = [];
     for (let i = 1; i < num_points; i++) {
       const dx = lines[lineIdx][i - 1].x - lines[lineIdx][i].x;
@@ -136,9 +139,9 @@ async function verify_kanji(
       line_point_dist.push(Math.sqrt(dx * dx + dy * dy));
     }
     const line_len = line_point_dist.reduce((sum, cur) => sum + cur);
-    const distanceArray = [];
     const pathPoints = [];
     let cur_len = 0;
+
     for (let pointIdx = 0; pointIdx < num_points; pointIdx++) {
       const len_percent = cur_len / line_len;
       cur_len += line_point_dist[pointIdx];
@@ -152,75 +155,91 @@ async function verify_kanji(
         x: pointX,
         y: pointY,
       });
-
-      const linePoint = lines[lineIdx][pointIdx];
-      const dx = linePoint.x - pointX;
-      const dy = linePoint.y - pointY;
-      distanceArray.push({
-        x: dx,
-        y: dy,
-      });
     }
-    distances.push(distanceArray);
+    scaledPaths.push(pathPoints);
 
     if (debug) {
       draw_line(ctx, pathPoints, "#00ffff");
     }
   }
 
-  const normDistances = [];
+  const allignedLines = [];
+  const corrections = [];
 
-  //normalize distances
-  let idx = 0;
-  for (const distArray of distances) {
-    const avgDx =
-      distArray.reduce((sum, curr) => sum + curr.x, 0) / distArray.length;
-    const avgDy =
-      distArray.reduce((sum, curr) => sum + curr.y, 0) / distArray.length;
+  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+    const { QAligned, R, scale, t } = kabsch(
+      scaledPaths[lineIdx].map((e) => [e.x, e.y]),
+      lines[lineIdx].map((e) => [e.x, e.y]),
+      scale_enable,
+    );
+
+    allignedLines.push(QAligned.map((e) => ({ x: e[0], y: e[1] })));
+
+    const translation = Math.sqrt(t[0] * t[0] + t[1] * t[1]);
+    const rotation = (Math.atan2(R[1][0], R[0][0]) * 180) / Math.PI;
+
+    corrections.push({
+      rotation: Math.abs(rotation),
+      translation:
+        translation / Math.sqrt(canvas_settings.width * canvas_settings.height),
+      scale: scale,
+      distance: -1,
+    });
 
     if (debug) {
       draw_line(
         ctx,
-        lines[idx].map((p) => ({ x: p.x - avgDx, y: p.y - avgDy })),
-        "#ff00ff",
+        QAligned.map((e) => ({ x: e[0], y: e[1] })),
+        "#ffff00",
       );
     }
-    normDistances.push(
-      distArray.map((e) => ({
-        x: e.x - avgDx,
-        y: e.y - avgDy,
-      })),
-    );
-
-    const move_percent =
-      Math.sqrt(avgDx * avgDx + avgDy * avgDy) /
-      Math.sqrt(canvas.height * canvas.width);
-
-    if (move_percent > max_move) {
-      console.log("Correction threshold reached");
-      return false;
-    }
-    idx++;
   }
 
-  for (const normDistArray of normDistances) {
-    const distance =
-      normDistArray
-        .map((e) => Math.sqrt(e.x * e.x + e.y * e.y))
-        .reduce((sum, cur) => sum + cur, 0) / normDistArray.length;
+  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+    const distances = [];
+    for (let pointIdx = 0; pointIdx < lines[lineIdx].length; pointIdx++) {
+      const ref_point = scaledPaths[lineIdx][pointIdx];
+      const draw_point = allignedLines[lineIdx][pointIdx];
 
-    const percent = distance / Math.sqrt(canvas.height * canvas.width);
+      const dx = ref_point.x - draw_point.x;
+      const dy = ref_point.y - draw_point.y;
 
-    if (percent > verify_threshold) {
-      console.log(
-        "verify threshold reached: " +
-          Math.round(percent * 100) +
-          "% of " +
-          Math.round(verify_threshold * 100) +
-          "%",
-      );
+      distances.push(Math.sqrt(dx * dx + dy * dy));
+    }
+
+    const avgDistance =
+      distances.reduce((sum, cur) => sum + cur) / distances.length;
+    corrections[lineIdx].distance =
+      avgDistance / Math.sqrt(canvas_settings.width * canvas_settings.height);
+  }
+
+  console.log(corrections);
+
+  //TODO better score calc
+  for (const cor of corrections) {
+    if (cor.rotation > max_rotation) {
+      console.log("Rotation to big");
       return false;
     }
+    if (cor.translation > max_translation) {
+      console.log("translation to big");
+      return false;
+    }
+    if (cor.scale < max_scale[0]) {
+      console.log("Too much down scale");
+      return false;
+    }
+    if (cor.scale > max_scale[1]) {
+      console.log("Too much up scale");
+      return false;
+    }
+
+    if (cor.distance > max_distance) {
+      console.log("max_distance to big");
+      return false;
+    }
+
+    console.log("Line is okay");
   }
 
   return true;
@@ -379,9 +398,12 @@ export default function KanjiDraw({ kanji, verify_callbackAction }: Props) {
   const [mouseDown, setMouseDown] = useState(false);
   const [drawPoints, setDrawPoints] = useState<Point[]>([]);
   const [lines, setLines] = useState<Point[][]>([]);
-  const verify_threshold = 0.1;
-  const max_move = 0.2;
 
+  const max_rotation = 20; //degree
+  const max_translation = 0.2;
+  const max_scale = [1, 1]; //no scaling allowed
+  const max_distance = 0.1;
+  const scale_enable = false;
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -451,8 +473,11 @@ export default function KanjiDraw({ kanji, verify_callbackAction }: Props) {
               kanji,
               canvasRef.current,
               true,
-              verify_threshold,
-              max_move,
+              max_distance,
+              max_translation,
+              max_rotation,
+              max_scale,
+              scale_enable,
             ).then((r) => {
               if (r == false) {
                 show_svg_in_canvas(canvasRef.current, kanji);

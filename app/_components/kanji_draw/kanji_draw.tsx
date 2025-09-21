@@ -64,10 +64,27 @@ const canvas_settings: CanvasSettings = {
   line_number_font: "20px serif",
 };
 
-function findxy(e: React.MouseEvent<HTMLCanvasElement>): Point {
+function findxy(
+  e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
+): Point {
   const bb = e.currentTarget.getBoundingClientRect();
-  const x = ((e.clientX - bb.left) / bb.width) * e.currentTarget.width;
-  const y = ((e.clientY - bb.top) / bb.height) * e.currentTarget.height;
+
+  let clientX: number;
+  let clientY: number;
+
+  if ("touches" in e) {
+    // TouchEvent
+    const touch = e.touches[0] || e.changedTouches[0];
+    clientX = touch.clientX;
+    clientY = touch.clientY;
+  } else {
+    // MouseEvent
+    clientX = e.clientX;
+    clientY = e.clientY;
+  }
+
+  const x = ((clientX - bb.left) / bb.width) * e.currentTarget.width;
+  const y = ((clientY - bb.top) / bb.height) * e.currentTarget.height;
 
   return {
     x: Math.floor(x),
@@ -320,7 +337,7 @@ function undo_canvas(
 }
 
 function mouseChange(
-  e: React.MouseEvent<HTMLCanvasElement>,
+  e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
   mouseDown: boolean,
   setMouseDown: (mouseDown: boolean) => void,
   drawPoints: Point[],
@@ -331,12 +348,14 @@ function mouseChange(
   const ctx = e.currentTarget.getContext("2d");
   if (!ctx) return;
 
+  e.preventDefault();
+
   const point = findxy(e);
   ctx.moveTo(point.x, point.y);
-
   switch (e.type) {
     case "mousedown":
-      if (e.button == 0) {
+    case "touchstart":
+      if (("button" in e && e.button == 0) || e.type == "touchstart") {
         //mouse button left is 0
         setMouseDown(true);
         ctx.beginPath();
@@ -344,6 +363,7 @@ function mouseChange(
       break;
     case "mouseup":
     case "mouseleave":
+    case "touchend":
       setMouseDown(false);
       if (mouseDown) {
         ctx.fillStyle = canvas_settings.stroke_colors[lines.length];
@@ -359,12 +379,13 @@ function mouseChange(
 }
 
 function canvas_draw(
-  e: React.MouseEvent<HTMLCanvasElement>,
+  e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
   mouseDown: boolean,
   drawPoints: Point[],
   setDrawPoints: (drawPoints: Point[]) => void,
   strokeColor: string,
 ) {
+  e.preventDefault();
   if (!mouseDown) return;
   const ctx = e.currentTarget.getContext("2d");
   if (!ctx) return;
@@ -418,6 +439,7 @@ export default function KanjiDraw({ kanji, verify_callbackAction }: Props) {
   return (
     <div className="w-full h-full flex flex-col">
       <canvas
+        className="touch-none"
         width={canvas_settings.width}
         height={canvas_settings.height}
         onMouseDown={(e) =>
@@ -460,6 +482,37 @@ export default function KanjiDraw({ kanji, verify_callbackAction }: Props) {
             drawPoints,
             setDrawPoints,
             canvas_settings.stroke_colors[lines.length],
+          )
+        }
+        onTouchMove={(e) =>
+          canvas_draw(
+            e,
+            mouseDown,
+            drawPoints,
+            setDrawPoints,
+            canvas_settings.stroke_colors[lines.length],
+          )
+        }
+        onTouchStart={(e) =>
+          mouseChange(
+            e,
+            mouseDown,
+            setMouseDown,
+            drawPoints,
+            setDrawPoints,
+            lines,
+            setLines,
+          )
+        }
+        onTouchEnd={(e) =>
+          mouseChange(
+            e,
+            mouseDown,
+            setMouseDown,
+            drawPoints,
+            setDrawPoints,
+            lines,
+            setLines,
           )
         }
         ref={canvasRef}

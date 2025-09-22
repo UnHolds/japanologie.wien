@@ -1,10 +1,10 @@
 "use client";
 import { ChangeEventHandler, useEffect, useState } from "react";
-import KanjiDraw from "./_components/kanji_draw";
 
 import { Kanji } from "@/app/_utils/kanji_type";
 import KanjiCustomSettings from "./_components/kanji_custom_settings";
 import KanjiListSettings from "./_components/kanji_list_settings";
+import KanjiDraw from "@/app/_components/kanji_draw/kanji_draw";
 
 export interface QuestionType {
   draw: boolean;
@@ -28,6 +28,7 @@ export default function KanjiTest() {
     useState<QuestionTypeEnum>(QuestionTypeEnum.DRAW);
 
   const [type, setType] = useState("list_draw");
+  const [isWrong, setIsWrong] = useState(false);
 
   useEffect(() => {
     const new_cur = kanjiList.map((k) => {
@@ -148,27 +149,40 @@ export default function KanjiTest() {
           Items left: {currentList.length}
         </div>
       </div>
-      <div className="flex justify-center mt-10">
+      <div className="flex flex-col items-center justify-center mt-10 w-full">
         {currentQuestionType == QuestionTypeEnum.DRAW && kanji && (
-          <KanjiDraw kanji={kanji.kanji} name={kanji.main_meaning} />
+          <>
+            <div className="text-2xl font-bold">{kanji.main_meaning}</div>
+            <div className="w-100">
+              <KanjiDraw
+                kanji={kanji.kanji}
+                verify_callbackAction={(cor) => {
+                  if (cor) {
+                    correct();
+                  } else {
+                    setIsWrong(true);
+                  }
+                }}
+              />
+            </div>
+          </>
         )}
         {currentQuestionType == QuestionTypeEnum.DONE && (
           <div className="text-4xl font-bold">ALL DONE</div>
         )}
       </div>
-      <div className="flex gap-5 justify-center w-full mt-20">
-        <button
-          className="flex bg-rose-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45"
-          onClick={wrong}
-        >
-          Wrong
-        </button>
-        <button
-          className="flex bg-emerald-700 p-4 rounded md:text-4xl text-2xl font-bold items-center justify-center w-45"
-          onClick={correct}
-        >
-          Correct
-        </button>
+      <div className="w-full flex justify-center mt-5">
+        {isWrong && (
+          <button
+            className="flex bg-red-500 p-2 rounded md:text-2xl text-xl font-bold items-center"
+            onClick={() => {
+              setIsWrong(false);
+              wrong();
+            }}
+          >
+            Wrong - Continue
+          </button>
+        )}
       </div>
     </div>
   );

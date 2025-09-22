@@ -232,8 +232,20 @@ async function verify_kanji(
 
   console.log(corrections);
 
+  const rot_scale = 0.3;
+  const trans_scale = 0.2;
+  const dist_scale = 0.5;
+
   //TODO better score calc
   for (const cor of corrections) {
+    const rot_sim = 1 - cor.rotation / 180;
+    const dist_sim = 1 - cor.distance;
+    const trans_sim = 1 - cor.translation;
+
+    const sim =
+      rot_sim * rot_scale + trans_sim * trans_scale + dist_sim * dist_scale;
+    console.log("Sim:" + sim);
+
     if (cor.rotation > max_rotation) {
       console.log("Rotation to big");
       return false;

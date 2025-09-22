@@ -27,8 +27,8 @@ const canvas_settings: CanvasSettings = {
   height: 500,
   background_color: "#212121",
   background_line_color: "#424242",
-  background_line_width: 3,
-  line_dash: [5, 3],
+  background_line_width: 8,
+  line_dash: [5, 0],
   stroke_colors: [
     "#bf0000",
     "#bf5600",
@@ -61,7 +61,7 @@ const canvas_settings: CanvasSettings = {
     "#bf4c4c",
     "#bf804c",
   ],
-  line_number_font: "20px serif",
+  line_number_font: "40px serif",
 };
 
 function findxy(
@@ -129,6 +129,40 @@ async function verify_kanji(
     console.log("Missmatch in the number of lines");
     return false;
   }
+
+  //This is used to interpolate some points on the line
+  const lines_interpolated = [];
+  const max_interpolate_distance = 5; // if the distance is longer than this px points will be interpolated
+  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+    const line = [];
+    line.push(lines[lineIdx][0]);
+
+    for (let pointIdx = 1; pointIdx < lines[lineIdx].length; pointIdx++) {
+      const now_p = lines[lineIdx][pointIdx];
+      const lst_p = lines[lineIdx][pointIdx - 1];
+      const dx = now_p.x - lst_p.x;
+      const dy = now_p.y - lst_p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > max_interpolate_distance) {
+        const num_interpols = Math.floor(dist / max_interpolate_distance);
+        const ndx = dx / dist;
+        const ndy = dy / dist;
+        for (let i = 0; i < num_interpols; i++) {
+          //now interpolate lines
+          const new_p = {
+            x: lst_p.x + ndx * max_interpolate_distance * i,
+            y: lst_p.y + ndy * max_interpolate_distance * i,
+          };
+          line.push(new_p);
+        }
+      }
+      line.push(now_p);
+    }
+    lines_interpolated.push(line);
+  }
+
+  lines = lines_interpolated;
+
   if (!svg) {
     console.log("svg does not exist in svg");
     return false;
@@ -175,9 +209,9 @@ async function verify_kanji(
     }
     scaledPaths.push(pathPoints);
 
-    if (debug) {
-      draw_line(ctx, pathPoints, "#00ffff");
-    }
+    //if (debug) {
+    //  draw_line(ctx, pathPoints, "#00ffff");
+    //}
   }
 
   const allignedLines = [];
@@ -232,9 +266,9 @@ async function verify_kanji(
 
   console.log(corrections);
 
-  const rot_scale = 0.3;
-  const trans_scale = 0.2;
-  const dist_scale = 0.5;
+  const rot_scale = 0.1;
+  const trans_scale = 0.1;
+  const dist_scale = 0.8;
 
   //TODO better score calc
   for (const cor of corrections) {
@@ -247,24 +281,24 @@ async function verify_kanji(
     console.log("Sim:" + sim);
 
     if (cor.rotation > max_rotation) {
-      console.log("Rotation to big");
+      console.log("Rotation to big: " + cor.rotation);
       return false;
     }
     if (cor.translation > max_translation) {
-      console.log("translation to big");
+      console.log("translation to big: " + cor.translation);
       return false;
     }
     if (cor.scale < max_scale[0]) {
-      console.log("Too much down scale");
+      console.log("Too much down scale: " + cor.scale);
       return false;
     }
     if (cor.scale > max_scale[1]) {
-      console.log("Too much up scale");
+      console.log("Too much up scale: " + cor.scale);
       return false;
     }
 
     if (cor.distance > max_distance) {
-      console.log("max_distance to big");
+      console.log("max_distance to big: " + cor.distance);
       return false;
     }
 
@@ -283,7 +317,7 @@ async function show_svg_in_canvas(
   if (!ctx) return;
 
   let svg_str = await loadSVG(kanji);
-  svg_str = svg_str.replace("#000000", "#ffffff");
+  svg_str = svg_str.replace("#000000", "#ffffffaa");
   const blob = new Blob([svg_str], { type: "image/svg+xml" });
   const url = URL.createObjectURL(blob);
   const img = new Image();
@@ -339,11 +373,7 @@ function undo_canvas(
     ctx.fillStyle = canvas_settings.stroke_colors[i];
     draw_line(ctx, lines[i], canvas_settings.stroke_colors[i]);
     ctx.font = canvas_settings.line_number_font;
-    ctx.fillText(
-      i + 1 + "",
-      lines[i][lines[i].length - 1].x,
-      lines[i][lines[i].length - 1].y,
-    );
+    ctx.fillText(i + 1 + "", lines[i][0].x, lines[i][0].y);
   }
   setLines(lines);
 }
@@ -371,6 +401,9 @@ function mouseChange(
         //mouse button left is 0
         setMouseDown(true);
         ctx.beginPath();
+        ctx.fillStyle = canvas_settings.stroke_colors[lines.length];
+        ctx.font = canvas_settings.line_number_font;
+        ctx.fillText(lines.length + 1 + "", point.x, point.y);
       }
       break;
     case "mouseup":
@@ -378,10 +411,7 @@ function mouseChange(
     case "touchend":
       setMouseDown(false);
       if (mouseDown) {
-        ctx.fillStyle = canvas_settings.stroke_colors[lines.length];
         lines.push(drawPoints);
-        ctx.font = canvas_settings.line_number_font;
-        ctx.fillText(lines.length + "", point.x, point.y);
         setLines(lines);
         setDrawPoints([]);
         ctx.closePath();
@@ -432,8 +462,8 @@ export default function KanjiDraw({ kanji, verify_callbackAction }: Props) {
   const [drawPoints, setDrawPoints] = useState<Point[]>([]);
   const [lines, setLines] = useState<Point[][]>([]);
 
-  const max_rotation = 20; //degree
-  const max_translation = 0.2;
+  const max_rotation = 45; //degree
+  const max_translation = 0.25;
   const max_scale = [1, 1]; //no scaling allowed
   const max_distance = 0.1;
   const scale_enable = false;

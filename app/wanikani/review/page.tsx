@@ -14,6 +14,9 @@ import {
   SubjectRadical,
   SubjectVocabulary,
 } from "../_api/subject";
+import Meaning from "./meaning";
+import Reading from "./reading";
+import Writing from "./writing";
 
 interface Review {
   reading: boolean;
@@ -68,6 +71,35 @@ function getReviewType(review: Review): ReviewType {
   return ReviewType.Writing;
 }
 
+function updateQueues(activeQueue: Review[], assignment: Assignment[]) {
+  if (
+    activeQueue[0].meaning == true &&
+    activeQueue[0].reading == true &&
+    activeQueue[0].writing == true
+  ) {
+    //all answered -> removing and reporting
+    toast.info("All correct removing");
+    activeQueue.shift();
+
+    //add new item
+    const newItem = assignment.shift();
+    if (newItem != undefined) {
+      activeQueue.push(toReview(newItem));
+    }
+  }
+
+  return [activeQueue, assignment];
+}
+
+function hasReading(
+  subject:
+    | SubjectRadical
+    | SubjectKanji
+    | SubjectVocabulary
+    | SubjectKanaVocabulary,
+): subject is SubjectKanji | SubjectVocabulary {
+  return "readings" in subject;
+}
 export default function Review() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [activeQueue, setActiveQueue] = useState<Review[]>([]);
@@ -77,6 +109,7 @@ export default function Review() {
   const [reviewType, setReviewType] = useState(ReviewType.Writing);
 
   useEffect(() => {
+    console.log("Fetching assignments");
     get_assignments()
       .then((r) => {
         shuffleArray(r); //for random order
@@ -96,8 +129,60 @@ export default function Review() {
       .catch(() => toast.error("Could not fetch assignments"));
   }, []);
 
+  const reportResult = (correct: boolean) => {
+    if (correct) {
+      switch (reviewType) {
+        case ReviewType.Meaning:
+          activeQueue[0].meaning = true;
+          break;
+        case ReviewType.Reading:
+          activeQueue[0].reading = true;
+          break;
+        case ReviewType.Writing:
+          activeQueue[0].writing = true;
+          break;
+      }
+      updateQueues(activeQueue, assignments);
+      shuffleArray(activeQueue);
+
+      if (activeQueue.length == 0) {
+        toast.info("All done!");
+        //TODO: exit to wani kani main page
+        return;
+      }
+
+      //updates current subject
+      setReviewType(getReviewType(activeQueue[0]));
+      get_subject_with_assignment(activeQueue[0].assignment).then((r) =>
+        setCurrentSubject(r),
+      );
+
+      //update queues
+      setActiveQueue(activeQueue);
+      setAssignments(assignments);
+    } else {
+      //TODO: report wrong answer
+    }
+  };
+
   return (
-    <div>
+    <div className="w-full h-full flex justify-center items-center flex-col">
+      <div className="bg-amber-900 w-1/3 h-1/3">
+        {reviewType == ReviewType.Meaning && currentSubject != undefined && (
+          <Meaning subject={currentSubject} reportResult={reportResult} />
+        )}
+
+        {reviewType == ReviewType.Writing && currentSubject != undefined && (
+          <Writing subject={currentSubject} reportResult={reportResult} />
+        )}
+
+        {reviewType == ReviewType.Reading &&
+          currentSubject != undefined &&
+          hasReading(currentSubject) && (
+            <Reading subject={currentSubject} reportResult={reportResult} />
+          )}
+      </div>
+
       <div>Assignments remain: {assignments.length}</div>
       <div>Active remain: {activeQueue.length}</div>
 

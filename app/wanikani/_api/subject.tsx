@@ -59,7 +59,7 @@ enum ReadingType {
   Onyomi,
 }
 
-interface KanjiReadingObject {
+export interface KanjiReadingObject {
   reading: string;
   primary: boolean;
   accepted_answer: boolean;
@@ -78,7 +78,7 @@ export interface SubjectVocabulary extends SubjectBase {
   reading_mnemonic: string;
 }
 
-interface VocabularyReadingObject {
+export interface VocabularyReadingObject {
   accepted_answer: boolean;
   primary: boolean;
   reading: string;

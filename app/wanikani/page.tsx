@@ -29,7 +29,7 @@ export default function WaniKani() {
           <div className="my-15 flex gap-5 md:flex-row flex-col mx-6">
             <Link
               className="flex bg-sky-700 p-4 rounded md:text-4xl text-2xl font-bold items-center"
-              href="/404"
+              href="/wanikani/review"
             >
               Reviews ({_assignments.length})
             </Link>

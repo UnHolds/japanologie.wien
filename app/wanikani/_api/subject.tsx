@@ -12,7 +12,7 @@ export interface SubjectBase {
   spaced_repetition_system_id: number;
 }
 
-interface Meaning {
+export interface Meaning {
   meaning: string;
   primary: boolean;
   accepted_answer: boolean;

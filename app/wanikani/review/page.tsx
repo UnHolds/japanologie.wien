@@ -17,15 +17,19 @@ import {
 import Meaning from "./meaning";
 import Reading from "./reading";
 import Writing from "./writing";
+import Solution from "./solution";
 
 interface Review {
   reading: boolean;
   meaning: boolean;
   writing: boolean;
+  num_wrong_reading: number;
+  num_wrong_meaning: number;
+  num_wrong_writing: number;
   assignment: Assignment;
 }
 
-enum ReviewType {
+export enum ReviewType {
   Reading = "Reading",
   Meaning = "Meaning",
   Writing = "Writing",
@@ -46,6 +50,9 @@ function toReview(assignment: Assignment): Review {
     reading: assignment.subject_type == SubjectType.Radical, //only radicals have no reading
     meaning: false,
     writing: assignment.subject_type != SubjectType.Kanji, //only kanji have writing
+    num_wrong_meaning: 0,
+    num_wrong_reading: 0,
+    num_wrong_writing: 0,
     assignment: assignment,
   };
 }
@@ -78,7 +85,8 @@ function updateQueues(activeQueue: Review[], assignment: Assignment[]) {
     activeQueue[0].writing == true
   ) {
     //all answered -> removing and reporting
-    toast.info("All correct removing");
+    console.log("All parts of element correct -> removing");
+    //TODO: report via api
     activeQueue.shift();
 
     //add new item
@@ -100,6 +108,7 @@ function hasReading(
 ): subject is SubjectKanji | SubjectVocabulary {
   return "readings" in subject;
 }
+
 export default function Review() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [activeQueue, setActiveQueue] = useState<Review[]>([]);
@@ -107,6 +116,8 @@ export default function Review() {
     SubjectRadical | SubjectKanji | SubjectVocabulary | SubjectKanaVocabulary
   >();
   const [reviewType, setReviewType] = useState(ReviewType.Writing);
+  const [lastCorrect, setLastCorrect] = useState(false);
+  const [showQuestion, setShowQuestion] = useState(true);
 
   useEffect(() => {
     console.log("Fetching assignments");
@@ -129,7 +140,23 @@ export default function Review() {
       .catch(() => toast.error("Could not fetch assignments"));
   }, []);
 
+  const get_next_review = () => {
+    shuffleArray(activeQueue);
+
+    //updates current subject
+    setReviewType(getReviewType(activeQueue[0]));
+    get_subject_with_assignment(activeQueue[0].assignment).then((r) =>
+      setCurrentSubject(r),
+    );
+
+    //update queues
+    setActiveQueue(activeQueue);
+    setAssignments(assignments);
+  };
+
   const reportResult = (correct: boolean) => {
+    setLastCorrect(correct);
+    console.log("Answer is correct: ", correct);
     if (correct) {
       switch (reviewType) {
         case ReviewType.Meaning:
@@ -143,46 +170,74 @@ export default function Review() {
           break;
       }
       updateQueues(activeQueue, assignments);
-      shuffleArray(activeQueue);
 
       if (activeQueue.length == 0) {
         toast.info("All done!");
-        //TODO: exit to wani kani main page
+        window.open("/wanikani");
         return;
       }
 
-      //updates current subject
-      setReviewType(getReviewType(activeQueue[0]));
-      get_subject_with_assignment(activeQueue[0].assignment).then((r) =>
-        setCurrentSubject(r),
-      );
-
-      //update queues
-      setActiveQueue(activeQueue);
-      setAssignments(assignments);
+      get_next_review();
     } else {
-      //TODO: report wrong answer
+      switch (reviewType) {
+        case ReviewType.Meaning:
+          activeQueue[0].num_wrong_meaning += 1;
+          break;
+        case ReviewType.Reading:
+          activeQueue[0].num_wrong_reading += 1;
+          break;
+        case ReviewType.Writing:
+          activeQueue[0].num_wrong_writing += 1;
+          break;
+      }
+      //show soultion not for writing
+      if (reviewType != ReviewType.Writing) {
+        setShowQuestion(false);
+      }
     }
+  };
+
+  const continue_review = () => {
+    get_next_review();
+    setShowQuestion(true);
   };
 
   return (
     <div className="w-full h-full flex justify-center items-center flex-col">
-      <div className="bg-amber-900 w-1/3 h-1/3">
-        {reviewType == ReviewType.Meaning && currentSubject != undefined && (
-          <Meaning subject={currentSubject} reportResult={reportResult} />
-        )}
+      <div className="w-100 ">
+        {reviewType == ReviewType.Meaning &&
+          currentSubject != undefined &&
+          showQuestion && (
+            <Meaning subject={currentSubject} reportResult={reportResult} />
+          )}
 
-        {reviewType == ReviewType.Writing && currentSubject != undefined && (
-          <Writing subject={currentSubject} reportResult={reportResult} />
-        )}
+        {reviewType == ReviewType.Writing &&
+          currentSubject != undefined &&
+          showQuestion && (
+            <Writing
+              subject={currentSubject}
+              reportResult={reportResult}
+              continue_review={continue_review}
+            />
+          )}
 
         {reviewType == ReviewType.Reading &&
           currentSubject != undefined &&
-          hasReading(currentSubject) && (
+          hasReading(currentSubject) &&
+          showQuestion && (
             <Reading subject={currentSubject} reportResult={reportResult} />
           )}
+
+        {showQuestion == false && currentSubject != undefined && (
+          <Solution
+            continue_reviews={continue_review}
+            reviewType={reviewType}
+            subject={currentSubject}
+          />
+        )}
       </div>
 
+      <div>Last was correct: {lastCorrect + ""}</div>
       <div>Assignments remain: {assignments.length}</div>
       <div>Active remain: {activeQueue.length}</div>
 
